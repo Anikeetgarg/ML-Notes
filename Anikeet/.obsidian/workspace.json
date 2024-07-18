@@ -18,8 +18,33 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "76e546f0f022b8a9",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "HandsOnML/C2 - End to End ML project.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "160e9e64a8448e21",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "FIT3179/Week 1.md",
+                "mode": "source",
+                "source": false
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -85,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "HandsOnML/C1 - ML landscape.md",
+                "file": "FIT3179/Week 1.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "HandsOnML/C1 - ML landscape.md",
+                "file": "FIT3179/Week 1.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "HandsOnML/C1 - ML landscape.md"
+                "file": "FIT3179/Week 1.md"
               }
             }
           }
@@ -146,8 +171,13 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "827a8be33fa41b17",
+  "active": "160e9e64a8448e21",
   "lastOpenFiles": [
+    "HandsOnML/C2 - End to End ML project.md",
+    "FIT3179/Week 1.md",
+    "Untitled",
+    "FIT3179",
+    "HandsOnML/C1 - ML landscape.md",
     "Welcome.md",
     "Personal Projects/C1 - ML landscape.md",
     "Personal Projects"
