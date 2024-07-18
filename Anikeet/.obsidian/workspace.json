@@ -37,7 +37,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "FIT3179/Week 1.md",
+                "file": "HandsOnML/C2 - End to End ML project.md",
                 "mode": "source",
                 "source": false
               }
@@ -110,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "FIT3179/Week 1.md",
+                "file": "HandsOnML/C2 - End to End ML project.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -127,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "FIT3179/Week 1.md",
+                "file": "HandsOnML/C2 - End to End ML project.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -150,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "FIT3179/Week 1.md"
+                "file": "HandsOnML/C2 - End to End ML project.md"
               }
             }
           }
@@ -173,8 +173,8 @@
   },
   "active": "160e9e64a8448e21",
   "lastOpenFiles": [
-    "HandsOnML/C2 - End to End ML project.md",
     "FIT3179/Week 1.md",
+    "HandsOnML/C2 - End to End ML project.md",
     "Untitled",
     "FIT3179",
     "HandsOnML/C1 - ML landscape.md",
