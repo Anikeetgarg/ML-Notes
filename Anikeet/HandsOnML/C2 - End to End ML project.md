@@ -63,4 +63,45 @@ for set_ in [train_set, test_set]:
 ```
 
 ### 3 Explore and visualize the data to gain insights
+- Visualizing geographical data
+Look at longitude and latitude 
+```python
+housing.plot(kind = 'scatter', x = 'longitude', y = 'latitude', alpha= 0.2, grid = True)
+plt.show()
+```
+Looking at the lat and long with respect to target variable
+```python
+housing.plot(kind = "scatter", x = 'longitude', y = 'latitude', 
+             s = housing['population']/ 100,  # size of marker
+             label = "population", 
+             c = 'median_house_value', # color of marker
+             # cmap = "jet", - dosent work for some reason
+             colorbar = True,
+             sharex= False, 
+             figsize = (10, 7)
+            )
+plt.show
+
+```
+- Looking for co relations
+```python
+temp = housing.copy()
+temp.drop(['ocean_proximity'], axis = 1, inplace=True) # droping categorical colums
+corr_matrix = temp.corr()
+corr_matrix.median_house_value.sort_values(ascending=False)
+```
+	median_house_value    1.000000
+	median_income         0.689651
+	total_rooms           0.131511
+	housing_median_age    0.105997
+	households            0.062816
+	total_bedrooms        0.046362
+	population           -0.028366
+	longitude            -0.043639
+	latitude             -0.146462
+1 means very positively co-related, -1 means very negatively co-related, 0 means show no linear co relation
+*Note = You can use feature engineering to create new features here*
+
+### 4 Prepare the data for machine learning algorithms
+-- continue reading from  page 75
 
