@@ -62,6 +62,8 @@ for set_ in [train_set, test_set]:
     set_.drop(['income_cat'], axis=1, inplace=True)
 ```
 
+^3b75bf
+
 ### 3 Explore and visualize the data to gain insights
 - Visualizing geographical data
 Look at longitude and latitude 
@@ -103,5 +105,107 @@ corr_matrix.median_house_value.sort_values(ascending=False)
 *Note = You can use feature engineering to create new features here*
 
 ### 4 Prepare the data for machine learning algorithms
--- continue reading from  page 75
+- Input Value transformation
+Most machine learning algorithms cannot work with missing features. So we need to clean the data
 
+We can do the following with the missing data
+
+```python 
+# drop the entire column
+housing.dropna(subset=["total_bedrooms"], inplace=True) # option 1
+# drop just the rows having missing data
+housing.drop("total_bedrooms", axis=1) # option 2
+
+# or fill the missing data with some value
+from sklearn.impute import SimpleImputer
+imputer = SimpleImputer(strategy='median') # this only work with numerial data
+
+'''
+We can use various values for strategy,
+Numerical data
+- mean - fills value using mean
+Categorical data
+- most_frequent
+- constant , and another variable fill_value can be set to fill it with constants
+'''
+
+# Some other types of imputers are 
+# KNNimputer - each value is filled with its neighourest neighbour value
+# IterativeImputer - trains a regression model per feature to predict the missing value based on all other variables 
+```
+
+Categorical features transformation
+```python
+# used for non related categories
+from sklearn.preprocessing import OneHotEncoder
+cat_encoder = OneHotEncoder()
+housing_cat_1hot = cat_encoder.fit_transform(housing_cat)
+
+# used for related categories
+# e.g. best > okay > bad
+from sklearn.preprocessing import OrdinalEncoder
+ordinal_encoder = OrdinalEncoder()
+housing_cat_encoded = ordinal_encoder.fit_transform(housing_cat)
+```
+
+Feature Scaling
+ML algorithms do not perform well when the scales of data is different
+we can scale using two techniques, min-max scaling, standardisation
+```python 
+# minmax scaling
+from sklearn.preprocessing import MinMaxScaler
+min_max_scaler = MinMaxScaler(feature_range=(-1, 1))
+housing_num_min_max_scaled = min_max_scaler.fit_transform(housing_num)
+
+# standardisation
+from sklearn.preprocessing import StandardScaler
+std_scaler = StandardScaler()
+housing_num_std_scaled = std_scaler.fit_transform(housing_num)
+```
+If scale is very wide and values in extremes are not very rare ( there is a even or a very good number of features at extremes) - scaling with squish data because of large scale 
+
+here we can take **square-root** of the numbers if features are in not a very big zone , 
+but if its something like power law distribution we can apply **log** to the whole data
+
+we can also use the bucketing technique like [[C2 - End to End ML project#^3b75bf]]
+
+Sometime out data has 2 peaks we can add transformational multimodial distribution for each of the peak. Each feature that depends on closeness to the peaks will benefit
+```python
+from sklearn.metrics.pairwise import rbf_kernel
+age_simil_35 = rbf_kernel(housing[["housing_median_age"]], [[35]], gamma=0.1)
+# can add multiple 
+# age_simil_40 = rbf_kernel(housing[["housing_median_age"]], [[40]], gamma=0.1)
+```
+
+- Target Value Transformation
+If we transform target variable (say take log) then the output will also be in log to make out life easy Sklearn has TransformedTargetRegressor which converts value before training and convert value for predict in to log and return the value out of log ( for out specific example)
+```python
+from sklearn.compose import TransformedTargetRegressor
+model = TransformedTargetRegressor(LinearRegression(),
+									transformer=StandardScaler())
+model.fit(housing[["median_income"]], housing_labels)
+predictions = model.predict(some_new_data)
+```
+
+#### Custom column transformers
+Sometimes we will need to convert values into log or apply custom transformation, fortunately we can create our own transformers
+```python
+from sklearn.preprocessing import FunctionTransformer
+log_transformer = FunctionTransformer(np.log, inverse_func=np.exp)
+log_pop = log_transformer.transform(housing[["population"]])
+
+# you can pass in arguments
+rbf_transformer = FunctionTransformer(rbf_kernel,
+										kw_args=dict(Y=[[35.]], gamma=0.1))
+age_simil_35 = rbf_transformer.transform(housing[["housing_median_age"]])
+
+# you can pass in multi dimensional array 
+sf_coords = 37.7749, -122.41
+sf_transformer = FunctionTransformer(rbf_kernel, kw_args=dict(Y = [sf_coords],   gamma = 0.1))
+sf_simil = sf_transformer.fit_transform(housing[['latitude', 'longitude']])
+
+# you can also perform feature engineering
+ratio_transformer = FunctionTransformer(lambda X: X[:, [0]] / X[:, [1]])
+ratio_transformer.transform(np.array([[1., 2.], [3., 4.]]))
+```
+read pg 81-83, too complex to explain
