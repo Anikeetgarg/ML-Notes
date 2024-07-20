@@ -208,4 +208,53 @@ sf_simil = sf_transformer.fit_transform(housing[['latitude', 'longitude']])
 ratio_transformer = FunctionTransformer(lambda X: X[:, [0]] / X[:, [1]])
 ratio_transformer.transform(np.array([[1., 2.], [3., 4.]]))
 ```
-read pg 81-83, too complex to explain
+
+to make custom transformers and make them able to learn i.e. fit() and later use transform()
+we need only 3 methods to do so fit() - always returns self, transform() and fit_transform()
+an example- standard scaler implementation as a custom funciton
+
+```python 
+from sklearn.base import BaseEstimator, TransformerMixin # - we need this as base
+from sklearn.utils.validation import check_array, check_is_fitted # we need this for validation of data
+class StandardScalerClone(BaseEstimator, TransformerMixin):
+	def __init__(self, with_mean=True): # no *args or **kwargs!
+		self.with_mean = with_mean
+	def fit(self, X, y=None): # y is required even though we don't use it
+		X = check_array(X) # checks that X is an array with finite float values
+		self.mean_ = X.mean(axis=0)
+		self.scale_ = X.std(axis=0)
+		self.n_features_in_ = X.shape[1] # every estimator stores this in fit()
+		return self # always return self!
+	def transform(self, X):
+		check_is_fitted(self) # looks for learned attributes (with trailing _)
+		X = check_array(X)
+		assert self.n_features_in_ == X.shape[1]
+		if self.with_mean:
+			X = X - self.mean_
+		return X / self.scale_
+```
+- All Scikit-Learn estimators set n_features_in_ in the fit() method, and they•
+ensure that the data passed to transform() or predict() has this number of
+features.
+- This implementation is not 100% complete: all estimators should set
+feature_names_in_ in the fit() method when they are passed a DataFrame.
+Moreover, all transformers should provide a get_feature_names_out() method,
+as well as an inverse_transform() method when their transformation can be
+reversed. See the last exercise at the end of this chapter for more details.
+
+```python 
+from sklearn.cluster import KMeans
+class ClusterSimilarity(BaseEstimator, TransformerMixin):
+	def __init__(self, n_clusters=10, gamma=1.0, random_state=None):
+		self.n_clusters = n_clusters
+		self.gamma = gamma
+		self.random_state = random_state
+	def fit(self, X, y=None, sample_weight=None):
+		self.kmeans_ = KMeans(self.n_clusters, random_state=self.random_state)
+		self.kmeans_.fit(X, sample_weight=sample_weight)
+		return self # always return self!
+	def transform(self, X):
+		return rbf_kernel(X, self.kmeans_.cluster_centers_, gamma=self.gamma)
+	def get_feature_names_out(self, names=None):
+		return [f"Cluster {i} similarity" for i in range(self.n_clusters)]
+```
