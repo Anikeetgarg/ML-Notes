@@ -29,3 +29,34 @@ TENSOR_LIKE_MATRIX = torch.zeros_like(input = MATRIX)
 TENSOR_LIKE_MATRIX = torch.ones_like(input = MATRIX)
 TENSOR_LIKE_MATRIX = torch.rand_like(input = MATRIX)
 ```
+Different Data types
+```python
+float_32_tensor = torch.tensor([2., 3., 5.],
+                                dtype = None, # what data type is used
+                                device= None, # which device? cpu? gpu?
+                               requires_grad = True)
+```
+Pytorch wants same datatype for variables and they should also run on same device
+use `torch.cuda.FloatTensor` for device to run on gpu and `torch.FloatTensor` to run 32 bit float
+We can convert data type from numpy to tensor
+
+```python
+p = np.array([1.2,2.2,3.2])
+tensor_p = torch.from_numpy(p)
+
+'''NOTE, converting from numpy to pytorch.tensor will convert it into 64 bit float. However, in torch by default 32-bit float is used so we usually convert it to 32 bit'''
+
+tensor_p = tensor_p.to(torch.float32)
+```
+
+We can take transpose of a tensor
+```python
+TENSOR = torch.rand(2,3)
+TENSOR
+	tensor([[0.1023, 0.2694, 0.0585],
+        [0.4099, 0.4583, 0.3281]])
+TENSOR.T
+	tensor([[0.1023, 0.4099],
+        [0.2694, 0.4583],
+        [0.0585, 0.3281]])
+```
