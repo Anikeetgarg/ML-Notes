@@ -9,13 +9,13 @@
 4. Save and reload your model
 
  
-### 1 Data Preparing and Loading
+### Data Preparing and Loading
 
 Classic loading of data 
 Visualise the data
 split into train, test 
 
-### 2 Building a Model
+### Building a Model
 
 nn.Module - it is a base class that needs to be inherited when building a computation graph
 
@@ -75,4 +75,48 @@ loss_fn = nn.L1Loss()
 optimizer = torch.optim.SGD(params = model_0.parameters(), lr = 0.01)
 
 # for a classification problem we will use nn.BCELoss() - binary cross entropy
+```
+
+### Fitting training data
+training loop 
+1. loop through data
+2. Forward pass
+3. Calculate the loss
+4. Loss backwards
+5. Optimizer step
+
+```python
+  ephocs = 500
+
+for ephoc in range(ephocs):
+    model_0.train() # pytorch will start tracking parameters and optimize for gradient decent
+
+    # forward pass
+    y_preds =  model_0.forward(X_train)
+
+    # calculate the loss
+    loss = loss_fn(y_preds, y_train)
+
+    # reset the optimizer to zero
+    optimizer.zero_grad()
+
+    # loss backward 
+    loss.backward()
+
+    # steps the optimizer (perform the gradient decent)
+    optimizer.step()
+
+    # update the parameters
+    model_0.eval()
+
+    # stop parameter tracking
+    # testing loop
+    with torch.inference_mode():
+        # calcualte the loss on test set
+        y_preds_ = model_0(X_test)
+
+        # calculate lass
+        loss_test = loss_fn(y_test, y_preds_)
+    if ephoc % 10 == 0:
+        print(f"Epochs = {ephoc} | Loss = {loss_test} | Params = {model_0.state_dict()}")
 ```
