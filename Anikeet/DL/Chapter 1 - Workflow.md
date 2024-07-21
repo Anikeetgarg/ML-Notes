@@ -86,7 +86,11 @@ training loop
 5. Optimizer step
 
 ```python
-  ephocs = 500
+ephocs_count = []
+train_loss_values = []
+test_loss_values = []
+
+ephocs = 500
 
 for ephoc in range(ephocs):
     model_0.train() # pytorch will start tracking parameters and optimize for gradient decent
@@ -110,13 +114,57 @@ for ephoc in range(ephocs):
     model_0.eval()
 
     # stop parameter tracking
-    # testing loop
     with torch.inference_mode():
         # calcualte the loss on test set
         y_preds_ = model_0(X_test)
 
         # calculate lass
         loss_test = loss_fn(y_test, y_preds_)
+
     if ephoc % 10 == 0:
         print(f"Epochs = {ephoc} | Loss = {loss_test} | Params = {model_0.state_dict()}")
+        ephocs_count.append(ephoc)
+        train_loss_values.append(loss)
+        test_loss_values.append(loss_test)
+```
+
+you can now plot how loss function decreases
+
+```python
+plt.plot(ephocs_count, np.array(torch.tensor(train_loss_values).numpy()), c = "orange", label = "Train loss")
+plt.plot(ephocs_count, np.array(torch.tensor(test_loss_values).numpy()), c = 'blue', label = "Test loss")
+plt.grid()
+plt.legend()
+```
+
+Saving your model 
+
+We are only saving the model params not the entire model 
+*** its recommended to do so ***
+torch.save() - saves the model, its params
+
+torch.load() - only loads complete model, (can load attributes)
+
+torch.nn.Module.load_state_dict() - used to load state params only 
+
+```python 
+# saving a model
+from pathlib import Path
+
+# creating a model_directory
+MODEL_PATH = Path("models")
+MODEL_PATH.mkdir(parents=True, exist_ok=True)
+
+# creating model save path
+MODEL_NAME = "my_model_01.pt"
+MODEL_SAVE_PATH = MODEL_PATH / MODEL_NAME
+
+# save the models state_dict()
+print(f"Saving to {MODEL_SAVE_PATH}")
+torch.save(obj= model_0.state_dict(), f= MODEL_SAVE_PATH)
+
+# loading a model
+
+model__0 = LinearRegressionModel()
+model__0.load_state_dict(torch.load(f = MODEL_SAVE_PATH))
 ```
