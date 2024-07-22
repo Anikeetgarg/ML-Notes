@@ -106,3 +106,112 @@ model_1 = nn.Sequential(
 
 next(model_1.parameters()).device # to use gpu
 ```
+
+Setting up loss function and optimiser
+
+```python
+## setting up a loss function
+
+# loss_fn =nn.BCELoss() - This funciton assumes that the inputs are processed with sigmoid
+loss_fn = nn.BCEWithLogitsLoss()
+
+# this is equivalent to but its better in efficency
+#loss_fn = nn.Sequential(
+# nn.Sigmoid(),
+# nn.BCELoss()
+#)
+optimizer = torch.optim.SGD(params = model_1.parameters(), lr = 0.1)
+```
+
+### 3 Fitting the model to data (training)
+
+```python
+epoch_count = []
+
+train_loss_val = []
+
+test_loss_val = []
+
+acc = []
+
+  
+
+epochs = 500
+
+  
+
+X_train, X_test = X_train.to(device), X_test.to(device)
+
+y_train, y_test = y_train.to(device), y_test.to(device)
+
+  
+
+for epoch in range(epochs):
+	model_1.train()
+	y_preds = model_1.forward(X_train).squeeze()
+	loss = loss_fn(y_preds, y_train)
+	accuracy = accuracy_fn(y_true = y_train, y_pred = y_preds)
+	optimizer.zero_grad()
+	loss.backward()
+	optimizer.step()
+	model_1.eval()
+	with torch.inference_mode():
+		y_train_preds = model_1.forward(X_test)
+		loss_test = loss_fn(y_train_preds.squeeze(), y_test)
+		
+	if epoch % 10 == 0:
+		
+		print(f"Epoch = {epoch} | accuracy = {accuracy} | train_loss = {loss} | test_loss = {loss_test}")
+		
+		epoch_count.append(epoch)
+		
+		acc.append(accuracy)
+		
+		train_loss_val.append(loss)
+		
+		test_loss_val.append(loss_test)
+```
+plotting loss
+
+### 4 Making predictions and evaluating a model (inference)
+```python
+def plot_loss():
+
+	plt.scatter(epoch_count, np.array(torch.tensor(train_loss_val).cpu().numpy()), label = 'Train', c="green")
+	plt.scatter(epoch_count, np.array(torch.tensor(test_loss_val).cpu().numpy()), label = 'Test', c="orange")
+	# plt.scatter(epoch_count, np.array(torch.tensor(acc).cpu().numpy()), label = 'Accuracy', c="lime")
+	plt.title("Loss over time")
+	plt.xlabel("Epoch")
+	plt.ylabel("Loss Value")
+	plt.grid()
+	plt.legend()
+```
+
+make a helper function
+
+```python
+import requests
+from pathlib import Path
+
+if Path("helper_functions.py").is_file():
+	print('helper_funciton already exits! skipping')
+else:
+	request = requests.get("https://raw.githubusercontent.com/mrdbourke/pytorch-deep-learning/main/helper_functions.py")
+	with open('helper_functions.py', 'wb') as f:
+		f.write(request.content)
+
+from helper_functions import plot_predictions, plot_decision_boundary
+```
+
+Plot the graph 
+```python
+plt.figure(figsize=(12, 6))
+plt.subplot(1, 2, 1)
+plt.title("Train")
+plot_decision_boundary(model_1, X_train, y_train)
+plt.subplot(1, 2, 2)
+plt.title("Test")
+plot_decision_boundary(model_1, X_test, y_test)
+```
+
+### 5 Improving a model (from a model perspective)

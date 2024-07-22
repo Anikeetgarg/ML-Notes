@@ -172,3 +172,4 @@ tensor_on_gpu = tensor.to(device)
 # tensor on gpu cannot be converted to numpy, we need to first transfer the thing onto a cpu
 NP = tensor_on_gpu.cpu().numpy()
 ```
+
