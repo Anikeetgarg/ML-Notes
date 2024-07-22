@@ -54,9 +54,21 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "66a31c58ae2100af",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "DL/Chapter 2 - Classification.md",
+                "mode": "source",
+                "source": false
+              }
+            }
           }
         ],
-        "currentTab": 3
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -122,7 +134,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "DL/Chapter 1 - Workflow.md",
+                "file": "DL/Chapter 2 - Classification.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -139,7 +151,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "DL/Chapter 1 - Workflow.md",
+                "file": "DL/Chapter 2 - Classification.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -162,7 +174,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "DL/Chapter 1 - Workflow.md"
+                "file": "DL/Chapter 2 - Classification.md"
               }
             }
           }
@@ -183,10 +195,11 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "81a28b718dedcbdd",
+  "active": "66a31c58ae2100af",
   "lastOpenFiles": [
-    "DL/Chapter 0 - Basics.md",
     "DL/Chapter 1 - Workflow.md",
+    "DL/Chapter 2 - Classification.md",
+    "DL/Chapter 0 - Basics.md",
     "HandsOnML/C2 - End to End ML project.md",
     "FIT3179/Week 1.md",
     "DL",
