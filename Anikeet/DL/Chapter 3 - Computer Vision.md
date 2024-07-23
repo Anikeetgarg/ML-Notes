@@ -229,3 +229,207 @@ end = timer()
 
 print_train_time(start, end, "cpu")
 ```
+
+Train / test loop
+```python
+torch.manual_seed(42)
+from tqdm.auto import tqdm
+train_time_on_cpu = timer()
+epochs = 3
+for epoch in range(epochs):
+    train_loss = 0
+
+    for batch, (X, y) in enumerate(train_dataloader):
+        model_0.train()
+
+        y_pred = model_0.forward(X)
+
+        loss = loss_fn(y_pred, y)
+        train_loss += loss
+
+        optimizer.zero_grad()
+        
+        loss.backward()
+
+        optimizer.step()
+        if batch % 400 == 0:
+            print(f'Look at {batch * len(X)} / {len(train_dataloader.dataset)} samples')
+
+    train_loss /= len(train_dataloader)
+
+    test_loss, test_acc = 0, 0
+    model_0.eval()
+
+    with torch.inference_mode():
+        for batch_test , (X_test, y_test) in enumerate(test_dataloader):
+            y_test_pred = model_0.forward(X_test)
+            loss_test = loss_fn(y_test_pred, y_test)
+            test_loss += loss_test
+
+            test_acc = acc_fn(y_test, y_test_pred.argmax(dim = 1))
+
+        test_loss /= len(test_dataloader)
+
+    print(f'Train Loss {train_loss:.4f} | Test Loss {test_loss:.4f} | Test acc {test_acc:.4f}')
+
+train_time_on_cpu_end = timer()
+total_train_time_with_model_0 = print_train_time(train_time_on_cpu, train_time_on_cpu_end, "cpu")
+```
+
+### 4 Making predictions and evaluating
+
+```python
+torch.manual_seed(42)
+def eval_model(model: torch.nn.Module,
+               data_loader: torch.utils.data.DataLoader,
+               loss_fn: torch.nn.Module,
+               acc_fn): 
+    loss, acc = 0, 0
+    with torch.inference_mode():
+        for X, y in data_loader:
+            y_pred = model(X)
+    
+            # accumulate loss per batchabs
+            loss += loss_fn(y_pred, y)
+            acc += acc_fn(y, y_pred.argmax(dim = 1))
+
+        loss /= len(data_loader)
+        acc /= len(data_loader)
+
+    return {"model_name" : model.__class__.__name__,
+            "model_loss" : loss,
+            "model_acc"  : acc}
+
+model_0_res = eval_model(model_0, test_dataloader, loss_fn, acc_fn)
+```
+
+### 5 Setup device agnostic for and evaluating on model 0
+
+```python
+import torch
+device = "cuda" if torch.cuda.is_available() else "cpu"
+device
+```
+
+### 6 Model 1: Adding non linear layers
+
+```python
+class FashionMNISTModelV1(nn.Module):
+
+	def __init__(self, input_features:int, hidden_units:int, output_features:int):
+		super().__init__()
+		self.layer_stack = nn.Sequential(
+		nn.Flatten(),
+		nn.Linear(in_features = input_features, out_features=hidden_units),
+		nn.ReLU(),
+		nn.Linear(in_features = hidden_units, out_features= output_features),
+		nn.ReLU(),)
+
+  
+
+	def forward(self, x):
+		return self.layer_stack(x)
+		
+model_1 = FashionMNISTModelV1(input_features= 28 * 28,
+							hidden_units = 10,
+							output_features = len(class_names)
+							).to(device)
+
+model_1.state_dict()
+```
+setting up loss, accuracy and optimizer
+```python
+loss_fn = nn.CrossEntropyLoss()
+
+optimizer = torch.optim.SGD(params = model_1.parameters(), lr = 0.1)
+
+acc_fn = Accuracy(task = "MULTICLASS", num_classes=len(class_names)).to(device)
+```
+
+from now on we will have train and test steps
+
+Train step 
+```python
+def train_step(model:nn.Module,
+	data_loader: torch.utils.data.DataLoader,
+	loss_fn: nn.Module,
+	acc_fn,
+	device: torch.device = device):
+	
+	train_loss, train_acc = 0, 0
+	
+	model.to(device)
+	
+	for batch, (X, y) in enumerate(data_loader):
+	
+		X = X.to(device)
+		y = y.to(device)
+		
+		model.train()
+		
+		y_pred = model.forward(X)
+		
+		loss = loss_fn(y_pred, y)
+		train_loss += loss
+		train_acc = acc_fn(y_pred.argmax(dim = 1), y)
+		
+		optimizer.zero_grad()
+		
+		loss.backward()
+		
+		optimizer.step()
+		
+	train_loss /= len(data_loader)
+	train_acc /= len(data_loader)
+	
+	print((f'Train loss {train_loss} | Train acc {train_acc}'))
+```
+
+test function
+
+```python
+def test_step(model:nn.Module,
+	data_loader: torch.utils.data.DataLoader,
+	loss_fn: nn.Module,
+	acc_fn,
+	device: torch.device = device
+	):
+	
+	test_loss, test_acc = 0, 0
+	model.to(device)
+	
+	with torch.inference_mode():
+		model.eval()
+		
+		for X, y in data_loader:
+			X = X.to(device)
+			y = y.to(device)
+			
+			y_pred = model.forward(X)			  
+			
+			test_loss+= loss_fn(y_pred, y)
+			test_acc += acc_fn(y_pred.argmax(dim = 1), y)
+		
+		test_loss /= len(data_loader)
+		test_acc /= len(data_loader)
+
+print(f"Test loss {test_loss} | Test acc {test_acc}")
+```
+
+Train loop 
+```python 
+epochs = 3
+time_model_1_start = timer()
+
+for epoch in tqdm(range(epochs)):
+
+	train_step(model_1, train_dataloader, loss_fn, acc_fn, device)
+	
+	test_step(model_1, test_dataloader, loss_fn, acc_fn, device)
+	
+time_model_1_end = timer()
+
+total_train_time_with_model_1 = time_model_1_end - time_model_1_start
+
+print(total_train_time_with_model_1)
+```
