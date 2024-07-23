@@ -215,3 +215,11 @@ plot_decision_boundary(model_1, X_test, y_test)
 ```
 
 ### 5 Improving a model (from a model perspective)
+
+- **Add more layers**
+- **Add more hidden units**
+- **Fitting for longer**
+- **Changing the activation functions**
+- **Change the learning rate**
+- **Change the loss function**
+- **Use transfer learning**
