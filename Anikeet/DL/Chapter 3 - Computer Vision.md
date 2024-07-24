@@ -369,7 +369,7 @@ def train_step(model:nn.Module,
 		
 		y_pred = model.forward(X)
 		
-		loss = loss_fn(y_pred, y)
+		loss += loss_fn(y_pred, y)
 		train_loss += loss
 		train_acc = acc_fn(y_pred.argmax(dim = 1), y)
 		
