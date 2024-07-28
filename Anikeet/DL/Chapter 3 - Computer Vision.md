@@ -492,9 +492,7 @@ class FashionMNISTModelV2(nn.Module):
 		)
 			
 	)
-		
-		  
-		
+	
 	def forward(self, x):
 		x = self.conv_block_1(x)
 		print(x.shape)
